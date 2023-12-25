@@ -1,0 +1,7 @@
+name=Immersive safes
+id=Immersive safes
+description=Immersive safes
+modversion=0.7.13.11.2023
+poster=poster.png
+pack=safes
+tiledef=safestiledef 4234

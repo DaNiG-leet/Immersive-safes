@@ -1,0 +1,6 @@
+UI_EN = {
+	UI_enter_password = "Enter password",
+	UI_Setup_password = "Set up new password",
+	UI_incorrect_code = "Incorrect password",
+	UI_password_set = "The password %1 was successfully set."
+}

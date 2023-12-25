@@ -1,0 +1,9 @@
+UI_RU = {
+	UI_enter_password = "Ввести пароль",
+	UI_Setup_password = "Установить новый пароль",
+	UI_incorrect_code = "Некорректный код",
+	UI_password_set = "Пароль %1 был успешно установлен",
+	UI_cant_get_door = "Невозможно добраться до дверцы сейфа",
+	UI_safe_opened = "Сейф был открыт",
+	UI_safe_closed = "Сейф был закрыт",
+}

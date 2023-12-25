@@ -1,0 +1,5 @@
+ContextMenu_RU = {
+	ContextMenu_Open_Safe = "Открыть сейф",
+	ContextMenu_Close_Safe = "Закрыть сейф",
+	ContextMenu_Set_Up_New_Password_Safe = "Установить новый пароль для сейфа",
+}
