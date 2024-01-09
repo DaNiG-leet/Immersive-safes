@@ -1,92 +1,12 @@
-if not isClient() then return end
+--if not isClient() then return end
 --Immersive safes
 --Coded by DaNiG
---TODO: Make compobility with mod on lockpicking
+--TODO: Make compatibility with mod on lockpicking
 
+local commonFunctions = require("ImmersiveSafes_Common_functions")
 local ImmersiveSafes = {}
 ---A list of all possible safes.
-local VaultTileList = {
-	{
-		close = 'safes_01_0',
-		open = 'safes_01_2'
-	},
-	{
-		close = 'safes_01_1',
-		open = 'safes_01_3'
-	},
-	{
-		close = 'safes_01_4',
-		open = 'safes_01_6'
-	},
-	{
-		close = 'safes_01_5',
-		open = 'safes_01_7'
-	},
-	{
-		close = 'safes_01_8',
-		open = 'safes_01_10'
-	},
-	{
-		close = 'safes_01_9',
-		open = 'safes_01_11'
-	},
-	{
-		close = 'safes_01_12',
-		open = 'safes_01_14'
-	},
-	{
-		close = 'safes_01_13',
-		open = 'safes_01_15'
-	},
-	{
-		close = 'safes_01_16',
-		open = 'safes_01_18',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_17',
-		open = 'safes_01_19',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_20',
-		open = 'safes_01_22',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_21',
-		open = 'safes_01_23',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_24',
-		open = 'safes_01_26',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_25',
-		open = 'safes_01_27',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_28',
-		open = 'safes_01_30',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_29',
-		open = 'safes_01_31',
-        wallSafe = true,
-	},
-	{
-		close = 'safes_01_32',
-		open = 'safes_01_33'
-	},
-	{
-		close = 'safes_01_34',
-		open = 'safes_01_35'
-	},
-}
+local VaultTileList = commonFunctions.VaultTileList
 
 local squareOffsetIsoDirections = {
     ['S'] = {
@@ -131,13 +51,7 @@ end
 ---Checks to see if the safe is open.
 ---@param value string
 ---@return boolean|nil
-function ImmersiveSafes.isVaultOpen(value)
-    for key, val in pairs(VaultTileList) do
-        if val['open'] == value then return true end
-        if val['close'] == value then return false end
-    end
-    return nil
-end
+ImmersiveSafes.isVaultOpen = commonFunctions.isVaultOpen
 
 ---Uploads "fingerprints" to the parsingFingers.ini file
 ---@param vaultObj IsoObject
@@ -159,6 +73,10 @@ end
 ---Records the player's "fingerprint" in the safe.
 ---@param vaultObj IsoObject
 function ImmersiveSafes.setFingerPrint(vaultObj)
+    if not vaultObj:getModData()['SAFEID'] then
+        vaultObj:getModData()['SAFEID'] = ZombRand(4000, 10000)
+        ImmersiveSafes.syncModData(vaultObj, 'SAFEID', vaultObj:getModData()['SAFEID'])
+    end
     if isAdmin() then return end
     local GAME_TIME = getGameTime()
     local obj = {}
@@ -170,10 +88,14 @@ end
 ---Causes timed action interactions with the safe.
 ---@param playerObj IsoPlayer
 ---@param target IsoObject
----@param actionFunc Function
+---@param actionFunc function
 ---@param actionStr string
 ---@param pass string
 function ImmersiveSafes.CommonSafeAction(playerObj, target, actionFunc, actionStr, pass)
+    if playerObj:isTimedActionInstant() then
+        ISTimedActionQueue.add(InteractionWithSafeAction:new(playerObj, target, actionFunc, actionStr, pass))
+        return
+    end
     local playerSquare = playerObj:getCurrentSquare()
     local safeSquare = target:getSquare()
     local props = target:getProperties()
@@ -188,7 +110,7 @@ function ImmersiveSafes.CommonSafeAction(playerObj, target, actionFunc, actionSt
             end
             ISTimedActionQueue.add(InteractionWithSafeAction:new(playerObj, target, actionFunc, actionStr, pass))
         else
-            getPlayer():addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
+            playerObj:addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
         end
         return
     end
@@ -196,7 +118,7 @@ function ImmersiveSafes.CommonSafeAction(playerObj, target, actionFunc, actionSt
     if safeSquare and walk then
 		ISTimedActionQueue.add(InteractionWithSafeAction:new(playerObj, target, actionFunc, actionStr, pass))
     elseif not walk then
-        getPlayer():addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
+        playerObj:addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
 	end
 end
 
@@ -243,11 +165,16 @@ end
 ---@param target IsoObject
 function ImmersiveSafes.OpenSafe(str, target)
     if target:getModData()['password'] == str then
-        getPlayer():addLineChatElement(getText('UI_safe_opened'), 1, 0, 0)
+        local player = getPlayer()
+        player:addLineChatElement(getText('UI_safe_opened'), 1, 0, 0)
         local checkV = target:getSprite():getName()
         local reversedV = ImmersiveSafes.checkVaultSprite(checkV)
         target:setSpriteFromName(reversedV)
         target:transmitUpdatedSpriteToServer()
+        if not player:getModData()['passwordHint'] then
+            player:getModData()['passwordHint'] = {}
+        end
+        player:getModData()['passwordHint'][target:getModData()['SAFEID']] = str
         ImmersiveSafes.syncModData(target, 'Locked', false)
     else
         getPlayer():addLineChatElement(getText('UI_incorrect_code'), 1, 0, 0)
@@ -261,6 +188,10 @@ end
 ---@param str string
 function ImmersiveSafes.SetUpSafePassword(player, target, str)
     ImmersiveSafes.setFingerPrint(target)
+    if not player:getModData()['passwordHint'] then
+        player:getModData()['passwordHint'] = {}
+    end
+    player:getModData()['passwordHint'][target:getModData()['SAFEID']] = str
     ImmersiveSafes.syncModData(target, 'password', str)
 end
 
@@ -321,7 +252,6 @@ function ImmersiveSafes.ContextMenu(player, context, objects, test)
                 ImmersiveSafes.playerObj = playerObj
                 local checkV = v:getTextureName()
                 if not ImmersiveSafes.checkVaultSprite(checkV) then return end
-
                 if ImmersiveSafes.isVaultOpen(checkV) == false and v:getModData()['password'] then
                     context:addOption(getText('ContextMenu_Open_Safe'), ImmersiveSafes.playerObj, ImmersiveSafes.OnEnterSafePassword, v).iconTexture = getTexture("media/ui/safe.png")
                 elseif ImmersiveSafes.isVaultOpen(checkV) and v:getModData()['password'] then
@@ -400,6 +330,21 @@ local function onServerCommand(module, command, args)
             end
         end
     end
+
+    -- Crutch
+    --[[if command == 'CheckDuplicate' then
+        local cell = getCell()
+        local currentGridSquare = cell:getGridSquare(args.x, args.y, args.z)
+        if currentGridSquare then
+            local objects = currentGridSquare:getObjects()
+            for i = objects:size() - 1, 0, -1 do
+                local item = objects:get(i)
+                if item and item:getSprite() and item:getSprite():getName() == args.name and objects:indexOf(item) ~= args.index then
+                    objects:remove(item)
+                end
+            end
+        end
+    end]]
 end
 
 Events.OnFillWorldObjectContextMenu.Add(ImmersiveSafes.ContextMenu)

@@ -10,6 +10,9 @@ function InteractionWithSafeAction:isValid()
 end
 
 function InteractionWithSafeAction:waitToStart()
+	if self.character:isTimedActionInstant() then
+		return false
+	end
 	self.character:faceThisObject(self.target)
 	return self.character:shouldBeTurning()
 end

@@ -4,9 +4,7 @@ local oldFn_3 = ISMoveableSpriteProps.placeMoveableInternal
 local oldFn_4 = ISInventoryPaneContextMenu.getContainers
 local oldFn_5 = ISCraftingUI.getContainers
 local IsoObject_new = IsoObject.new
-local modDataPasswordbuffer
-local modDataLockedbuffer
-local modDataFprintsbuffer
+local modDataBuffer = {}
 
 local function OnRefreshInventoryWindowContainers(inventoryPage, type)
     if isAdmin() then return end
@@ -38,17 +36,18 @@ end
 function ISMoveableSpriteProps:pickUpMoveableInternal(_character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating)
     if not luautils.stringStarts(_spriteName, "safes_01") then return oldFn_2(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating) end
     local returnedItem = oldFn_2(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating)
-    returnedItem:getModData()['password'] = _object:getModData()['password'] or nil
-    returnedItem:getModData()['Locked'] = _object:getModData()['Locked'] or nil
-    returnedItem:getModData()['fprints'] = _object:getModData()['fprints'] or nil
+    for k, v in pairs(_object:getModData()) do
+        returnedItem:getModData()[k] = v
+    end
     return returnedItem
 end
 
 function ISMoveableSpriteProps:placeMoveableInternal(_square, _item, _spriteName)
     if type(_spriteName) == 'string' and luautils.stringStarts(_spriteName, "safes_01") then
-        modDataPasswordbuffer = _item:getModData()['password']
-        modDataLockedbuffer = _item:getModData()['Locked']
-        modDataFprintsbuffer = _item:getModData()['fprints']
+        for k, v in pairs(_item:getModData()) do
+            print(k .. ' ' .. tostring(v))
+            modDataBuffer[k] = v
+        end
         oldFn_3(self, _square, _item, _spriteName)
         return
     end
@@ -58,9 +57,10 @@ end
 function IsoObject.new(_cell, _square, itemSprite)
     if not type(itemSprite) == 'string' or (type(itemSprite) == 'string' and not luautils.stringStarts(itemSprite, "safes_01")) then return IsoObject_new(_cell, _square, itemSprite) end
     local obj = IsoObject_new(_cell, _square, itemSprite)
-    obj:getModData()['password'] = modDataPasswordbuffer
-    obj:getModData()['Locked'] = modDataLockedbuffer
-    obj:getModData()['fprints'] = modDataFprintsbuffer
+    local modData = obj:getModData()
+    for k, v in pairs(modDataBuffer) do
+        modData[k] = v
+    end
     return obj
 end
 
