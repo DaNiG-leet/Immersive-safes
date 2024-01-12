@@ -1,7 +1,7 @@
 name=Immersive safes
 id=ImmersiveSafes
 description=Immersive safes
-modversion=0.8.09.01.2024
+modversion=0.85.12.01.2024
 poster=poster.png
 pack=safes
 tiledef=safestiledef 4234

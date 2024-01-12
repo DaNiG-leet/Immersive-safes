@@ -30,13 +30,7 @@ local squareOffsetIsoDirections = {
 ---Returns the opposite name of the sprite. If it is not a safe, returns nil.
 ---@param value string
 ---@return string|nil
-function ImmersiveSafes.checkVaultSprite(value)
-    for key, val in pairs(VaultTileList) do
-        if val['open'] == value then return VaultTileList[key]['close'] end
-        if val['close'] == value then return VaultTileList[key]['open'] end
-    end
-    return nil
-end
+ImmersiveSafes.checkVaultSprite = commonFunctions.checkVaultSprite
 
 ---Checks to see if the safe is a wall safe.
 ---@param value string
@@ -236,6 +230,70 @@ function ImmersiveSafes.AdminChangeHP(target)
     sendClientCommand(getPlayer(), 'SafesModule', 'ChangeThumpHP', args)
 end
 
+function ImmersiveSafes.isLockpickingModActivated()
+    local activatedMods = getActivatedMods()
+    return activatedMods:contains('zReBetterLockpicking')
+end
+
+function ImmersiveSafes.CrackSafe(playerObj, target)
+    local WINDOW_WIDTH = 340
+    local WINDOW_HEIGHT = 150
+    local modal = CrowbarWindow:new(Core:getInstance():getScreenWidth()/2 - WINDOW_WIDTH/2 + 300, Core:getInstance():getScreenHeight()/2 - 500/2, WINDOW_WIDTH, WINDOW_HEIGHT)
+    modal.lockpick_object = target
+    modal.mode = 'SAFE'
+    modal.character = playerObj
+    modal.addingXP = 10
+    modal.diffLevel = 4
+    modal.isGarage = -1
+
+    playerObj:facePosition(target:getX(), target:getY())
+
+    modal:initialise()
+    modal:addToUIManager()
+end
+
+function ImmersiveSafes.OnLockPickingSafe(playerObj, target)
+    local playerSquare = playerObj:getCurrentSquare()
+    local safeSquare = target:getSquare()
+    local props = target:getProperties()
+    local dir = props:Is("Facing") and props:Val("Facing")
+    if dir and not ImmersiveSafes.isWallSafe(target:getTextureName()) then
+        local offset = squareOffsetIsoDirections[dir]
+        safeSquare = getCell():getGridSquare(safeSquare:getX() + offset.X, safeSquare:getY() + offset.Y, safeSquare:getZ())
+        local adjacent = AdjacentFreeTileFinder.FindEdge(safeSquare, dir, playerObj, true)
+        if adjacent then
+            if adjacent ~= playerSquare then
+                ISTimedActionQueue.add(ISWalkToTimedAction:new(playerObj, adjacent))
+            end
+            ISTimedActionQueue.add(EmptyAction:new(playerObj, ImmersiveSafes.CrackSafe, playerObj, target))
+        else
+            playerObj:addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
+        end
+        return
+    end
+    local walk = luautils.walkAdj(playerObj, safeSquare)
+    if safeSquare and walk then
+        ISTimedActionQueue.add(EmptyAction:new(playerObj, ImmersiveSafes.CrackSafe, playerObj, target))
+    elseif not walk then
+        playerObj:addLineChatElement(getText('UI_cant_get_door'), 1, 0, 0)
+	end
+end
+
+---Synchronizes modData with the server.
+---@param target IsoObject
+---@param key string
+---@param value any
+ImmersiveSafes.syncModData = commonFunctions.syncModData
+
+---Writes modData to a specific object.
+---@param IsoObject IsoObject
+---@param modData KahluaTable
+function ImmersiveSafes.setModData(IsoObject, modData)
+    local isoObjectModData = IsoObject:getModData()
+    for k, v in pairs(modData) do isoObjectModData[k] = v end
+    getPlayerLoot(0):refreshBackpacks()
+end
+
 ---Adds context menu items for the safe.
 ---@param player IsoPlayer
 ---@param context ISContextMenu
@@ -260,6 +318,41 @@ function ImmersiveSafes.ContextMenu(player, context, objects, test)
                 
                 if ImmersiveSafes.isVaultOpen(checkV) then context:addOption(getText('ContextMenu_Set_Up_New_Password_Safe'), ImmersiveSafes.playerObj, ImmersiveSafes.OnSetUpSafePasswordUI, v).iconTexture = getTexture("media/ui/safe.png") end
 
+                if ImmersiveSafes.isLockpickingModActivated() and ImmersiveSafes.isVaultOpen(checkV) == false and SandboxVars.ImmersiveSafes.canBeLockpicking then
+                    local function predicateNotBroken(item)
+                        return not item:isBroken(); 
+                    end
+                    local playerStrength = playerObj:getPerkLevel(Perks.Strength)
+                    local endurance = playerObj:getStats():getEndurance()
+                    local option = context:addOption(getText("UI_Lockpick_crowbar"), playerObj, ImmersiveSafes.OnLockPickingSafe, v)
+                    option.iconTexture = getTexture("media/ui/Item_Crowbar.png")
+                    option.toolTip = ISToolTip:new()
+                    option.toolTip:initialise()
+                    option.toolTip:setVisible(false)
+                    option.toolTip:setName('Safe')
+
+                    local color
+                    if playerStrength >= 6 then
+                        color = " <RGB:1,1,1> "
+                    else
+                        color = " <RGB:0.9,0.5,0> "
+                    end
+                    option.toolTip.description = color .. getText("Tooltip_vehicle_recommendedSkill", playerStrength .. "/" .. 6, "") .. " <LINE> "
+
+                    local inv = playerObj:getInventory();
+                    local crowbarinv = inv:getFirstTagEvalRecurse("zReBLCrow", predicateNotBroken);
+                    if not crowbarinv then
+                        color = " <RGB:0.9,0,0> "
+                        option.toolTip.description = option.toolTip.description .. color .. getText("ContextMenu_Require", getItemNameFromFullType("Base.Crowbar")) .. " <LINE> "
+                        option.notAvailable = true
+                    end
+                    if endurance <= 0.5 then
+                        color = " <RGB:0.9,0,0> "
+                        option.toolTip.description = option.toolTip.description .. color .. getText("UI_enduranceRequire") .. " <LINE> "
+                        option.notAvailable = true
+                    end
+                end
+
                 if isAdmin() then
                     local adminSafeOptions = context:addOption("Admin Safe Options")
                     adminSafeOptions.iconTexture = getTexture("media/ui/BugIcon.png")
@@ -274,31 +367,6 @@ function ImmersiveSafes.ContextMenu(player, context, objects, test)
             end
         end
     end
-end
-
----Synchronizes modData with the server.
----@param target IsoObject
----@param key string
----@param value any
-function ImmersiveSafes.syncModData(target, key, value)
-    local args = {}
-    local sq = target:getSquare()
-    args.x = sq:getX()
-    args.y = sq:getY()
-    args.z = sq:getZ()
-    args.target = target:getSprite():getName()
-    args.value = value
-    args.key = key
-    sendClientCommand(getPlayer(), 'SafesModule', 'editSafeModData', args)
-end
-
----Writes modData to a specific object.
----@param IsoObject IsoObject
----@param modData KahluaTable
-function ImmersiveSafes.setModData(IsoObject, modData)
-    local isoObjectModData = IsoObject:getModData()
-    for k, v in pairs(modData) do isoObjectModData[k] = v end
-    getPlayerLoot(0):refreshBackpacks()
 end
 
 local function onServerCommand(module, command, args)

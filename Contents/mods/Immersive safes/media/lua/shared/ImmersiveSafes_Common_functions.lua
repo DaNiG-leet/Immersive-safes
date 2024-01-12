@@ -91,4 +91,24 @@ a.isVaultOpen = function(value)
     return nil
 end
 
+a.checkVaultSprite = function(value)
+	for key, val in pairs(a.VaultTileList) do
+		if val['open'] == value then return a.VaultTileList[key]['close'] end
+		if val['close'] == value then return a.VaultTileList[key]['open'] end
+	end
+	return nil
+end
+
+a.syncModData = function(target, key, value)
+    local args = {}
+    local sq = target:getSquare()
+    args.x = sq:getX()
+    args.y = sq:getY()
+    args.z = sq:getZ()
+    args.target = target:getSprite():getName()
+    args.value = value
+    args.key = key
+    sendClientCommand(getPlayer(), 'SafesModule', 'editSafeModData', args)
+end
+
 return a
