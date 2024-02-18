@@ -1,9 +1,9 @@
-local old_fn1 = ISInventoryPage.setNewContainer
-local oldFn_2 = ISMoveableSpriteProps.pickUpMoveableInternal
-local oldFn_3 = ISMoveableSpriteProps.placeMoveableInternal
-local oldFn_4 = ISInventoryPaneContextMenu.getContainers
-local oldFn_5 = ISCraftingUI.getContainers
-local IsoObject_new = IsoObject.new
+local old_ISInventoryPage_setNewContainer = ISInventoryPage.setNewContainer
+local old_ISMoveableSpriteProps_pickUpMoveableInternal = ISMoveableSpriteProps.pickUpMoveableInternal
+local old_ISMoveableSpriteProps_placeMoveableInternal = ISMoveableSpriteProps.placeMoveableInternal
+local old_ISInventoryPaneContextMenu_getContainers = ISInventoryPaneContextMenu.getContainers
+local old_ISCraftingUI_getContainers = ISCraftingUI.getContainers
+local old_IsoObject_new = IsoObject.new
 local modDataBuffer = {}
 
 local function OnRefreshInventoryWindowContainers(inventoryPage, type)
@@ -26,16 +26,16 @@ Events.OnRefreshInventoryWindowContainers.Add(OnRefreshInventoryWindowContainers
 
 function ISInventoryPage:setNewContainer(inventory)
     if isAdmin() then
-        old_fn1(self, inventory)
+        old_ISInventoryPage_setNewContainer(self, inventory)
         return
     end
     if inventory:getParent() and inventory:getParent():getModData() and inventory:getParent():getModData()['Locked'] then return end
-    old_fn1(self, inventory)
+    old_ISInventoryPage_setNewContainer(self, inventory)
 end
 
 function ISMoveableSpriteProps:pickUpMoveableInternal(_character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating)
-    if not luautils.stringStarts(_spriteName, "safes_01") then return oldFn_2(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating) end
-    local returnedItem = oldFn_2(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating)
+    if not luautils.stringStarts(_spriteName, "safes_01") then return old_ISMoveableSpriteProps_pickUpMoveableInternal(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating) end
+    local returnedItem = old_ISMoveableSpriteProps_pickUpMoveableInternal(self, _character, _square, _object, _sprInstance, _spriteName, _createItem, _rotating)
     for k, v in pairs(_object:getModData()) do
         returnedItem:getModData()[k] = v
     end
@@ -48,15 +48,15 @@ function ISMoveableSpriteProps:placeMoveableInternal(_square, _item, _spriteName
             print(k .. ' ' .. tostring(v))
             modDataBuffer[k] = v
         end
-        oldFn_3(self, _square, _item, _spriteName)
+        old_ISMoveableSpriteProps_placeMoveableInternal(self, _square, _item, _spriteName)
         return
     end
-    oldFn_3(self, _square, _item, _spriteName)
+    old_ISMoveableSpriteProps_placeMoveableInternal(self, _square, _item, _spriteName)
 end
 
 function IsoObject.new(_cell, _square, itemSprite)
-    if not type(itemSprite) == 'string' or (type(itemSprite) == 'string' and not luautils.stringStarts(itemSprite, "safes_01")) then return IsoObject_new(_cell, _square, itemSprite) end
-    local obj = IsoObject_new(_cell, _square, itemSprite)
+    if not type(itemSprite) == 'string' or (type(itemSprite) == 'string' and not luautils.stringStarts(itemSprite, "safes_01")) then return old_IsoObject_new(_cell, _square, itemSprite) end
+    local obj = old_IsoObject_new(_cell, _square, itemSprite)
     local modData = obj:getModData()
     for k, v in pairs(modDataBuffer) do
         modData[k] = v
@@ -65,7 +65,7 @@ function IsoObject.new(_cell, _square, itemSprite)
 end
 
 ISInventoryPaneContextMenu.getContainers = function(...)
-    local containers = oldFn_4(...)
+    local containers = old_ISInventoryPaneContextMenu_getContainers(...)
     local array = ArrayList.new()
     for i = 0, containers:size() - 1 do
         local itemContainer = containers:get(i)
@@ -77,7 +77,7 @@ ISInventoryPaneContextMenu.getContainers = function(...)
 end
 
 function ISCraftingUI:getContainers()
-    oldFn_5(self)
+    old_ISCraftingUI_getContainers(self)
     local array = ArrayList.new()
     for i = 0, self.containerList:size() - 1 do
         local itemContainer = self.containerList:get(i)

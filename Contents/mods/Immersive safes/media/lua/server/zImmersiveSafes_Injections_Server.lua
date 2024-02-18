@@ -1,4 +1,4 @@
-local old_fn = ISDestroyCursor.canDestroy
+local old_ISDestroyCursor_canDestroy = ISDestroyCursor.canDestroy
 
 local wallSafes = {
     WallN = {
@@ -87,9 +87,9 @@ local function isFloorSafeOnFloor(obj)
 end
 
 function ISDestroyCursor:canDestroy(object)
-    if isAdmin() then return old_fn(self, object) end
+    if isAdmin() then return old_ISDestroyCursor_canDestroy(self, object) end
     if (instanceof(object, 'IsoObject') or instanceof(object, 'IsoThumpable')) and type(object:getTextureName()) == 'string' and luautils.stringStarts(object:getTextureName(), "safes_01") then return false end
     if isWall(object) and (isWallSafeOnWall(object) or isWallSafeBehindTheWall(object)) then return false end
     if object:isFloor() and isFloorSafeOnFloor(object) then return false end
-    return old_fn(self, object)
+    return old_ISDestroyCursor_canDestroy(self, object)
 end
