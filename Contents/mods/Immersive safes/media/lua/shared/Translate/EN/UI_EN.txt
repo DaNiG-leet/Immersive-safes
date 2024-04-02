@@ -1,6 +1,10 @@
 UI_EN = {
 	UI_enter_password = "Enter password",
-	UI_Setup_password = "Set up new password",
-	UI_incorrect_code = "Incorrect password",
-	UI_password_set = "The password %1 was successfully set."
+	UI_Setup_password = "Set new password",
+	UI_incorrect_code = "Incorrect code",
+	UI_password_set = "Password %1 was successfully set",
+	UI_cant_get_door = "Unable to reach the safe door",
+	UI_safe_opened = "The safe has been opened",
+	UI_safe_closed = "The safe has been closed",
+	UI_remembered_password = "Remembered password",
 }

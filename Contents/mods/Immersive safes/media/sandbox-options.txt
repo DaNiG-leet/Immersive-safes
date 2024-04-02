@@ -1,7 +1,0 @@
-VERSION = 1,
-
-option ImmersiveSafes.canBeLockpicking
-{
-	type = boolean, default = true,
-	page = ImmersiveSafes, translation = canBeLockpicking,
-}

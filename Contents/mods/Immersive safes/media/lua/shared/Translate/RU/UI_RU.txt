@@ -6,4 +6,5 @@ UI_RU = {
 	UI_cant_get_door = "Невозможно добраться до дверцы сейфа",
 	UI_safe_opened = "Сейф был открыт",
 	UI_safe_closed = "Сейф был закрыт",
+	UI_remembered_password = "Запомнившийся пароль",
 }

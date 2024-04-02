@@ -1,5 +1,5 @@
 ContextMenu_EN = {
-	ContextMenu_Open_Safe = "Open the safe",
+	ContextMenu_Open_Safe = "Open Safe",
 	ContextMenu_Close_Safe = "Close the safe",
 	ContextMenu_Set_Up_New_Password_Safe = "Set a new password for the safe",
 }

@@ -1,12 +1,17 @@
--- TODO: Refactor me
+local UIModule = require("ImmersiveSafes_UI_Utilities")
+local modDataKey = require("ImmersiveSafes_DMD").modDataKey
+local utilities = require("ImmersiveSafes_Common_functions")
 
-ISEnterPasswordUI = ISPanelJoypad:derive("ISEnterPasswordUI")
+local ISEnterPasswordUI = ISPanelJoypad:derive("ISEnterPasswordUI")
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
-local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
+
+local size = 18
 
 function ISEnterPasswordUI:initialise()
 	ISPanelJoypad.initialise(self)
+
+	UIModule.addBaseUI(self)
 
 	local fontHgt = FONT_HGT_SMALL
 	local buttonWid1 = getTextManager():MeasureStringX(UIFont.Small, "Ok") + 12
@@ -15,165 +20,205 @@ function ISEnterPasswordUI:initialise()
 	local buttonHgt = math.max(fontHgt + 6, 25)
 	local padBottom = 10
 
-	self.yes = ISButton:new((self:getWidth() / 2) - 5 - buttonWid, self:getHeight() - padBottom - buttonHgt, buttonWid, buttonHgt, getText("UI_Ok"), self, self.onClick)
-	self.yes.internal = "OK"
-	self.yes:initialise()
-	self.yes:instantiate()
-	self.yes.borderColor = {
+	local btn = ISButton:new((self:getWidth() / 2) - 5 - buttonWid, self:getHeight() - padBottom - buttonHgt, buttonWid, buttonHgt, getText("UI_Ok"), self, self.okAction)
+	btn.internal = "OK"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.yes)
+	self:addChild(btn)
 
-	self.no = ISButton:new((self:getWidth() / 2) + 5, self:getHeight() - padBottom - buttonHgt, buttonWid, buttonHgt, getText("UI_Close"), self, self.onClick)
-	self.no.internal = "CANCEL"
-	self.no:initialise()
-	self.no:instantiate()
-	self.no.borderColor = {
+	btn = ISButton:new((self:getWidth() / 2) + 5, self:getHeight() - padBottom - buttonHgt, buttonWid, buttonHgt, getText("UI_Close"), self, self.destroy)
+	btn.internal = "CANCEL"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.no)
+	self:addChild(btn)
 
-	self.fontHgt = FONT_HGT_MEDIUM
-	local inset = 2
-	local height = inset + self.fontHgt * self.numLines + inset
-	local y = 55
-
-	self.button1p = ISButton:new((self:getWidth() / 2) - 28, (self:getHeight() / 2) - 25, 16, 16, getText("^"), self, self.onClick)
-	self.button1p.internal = "B1PLUS"
-	self.button1p:initialise()
-	self.button1p:instantiate()
-	self.button1p.borderColor = {
+	btn = ISButton:new(0, (self:getHeight() / 2) - 25, size, size, "^", self, self.onClick)
+	btn.internal = "B1PLUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button1p)
+	self:addChild(btn)
 
-	self.number1 = ISTextEntryBox:new("0", self:getWidth() / 2 - 28, self:getHeight() / 2 - 5, 18, 18)
+	table.insert(self.numberElements[1], btn)
+
+	self.number1 = ISTextEntryBox:new("0", 0, self:getHeight() / 2 - 5, size, size)
 	self.number1:initialise()
 	self.number1:instantiate()
 	self.number1:setEditable(false)
 	self:addChild(self.number1)
 
-	self.button1m = ISButton:new(self:getWidth() / 2 - 28, (self:getHeight() / 2) + 16, 16, 16, getText("v"), self, self.onClick)
-	self.button1m.internal = "B1MINUS"
-	self.button1m:initialise()
-	self.button1m:instantiate()
-	self.button1m.borderColor = {
+	table.insert(self.numberElements[1], self.number1)
+
+	btn = ISButton:new(0, (self:getHeight() / 2) + 16, size, size, "v", self, self.onClick)
+	btn.internal = "B1MINUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button1m)
+	self:addChild(btn)
+
+	table.insert(self.numberElements[1], btn)
 
 	--
-	self.button2p = ISButton:new(self:getWidth() / 2 - 8, (self:getHeight() / 2) - 25, 16, 16, getText("^"), self, self.onClick)
-	self.button2p.internal = "B2PLUS"
-	self.button2p:initialise()
-	self.button2p:instantiate()
-	self.button2p.borderColor = {
+	btn = ISButton:new(0, (self:getHeight() / 2) - 25, size, size, "^", self, self.onClick)
+	btn.internal = "B2PLUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button2p)
+	self:addChild(btn)
 
-	self.number2 = ISTextEntryBox:new("0", self:getWidth() / 2 - 8, self:getHeight() / 2 - 5, 18, 18)
+	table.insert(self.numberElements[2], btn)
+
+	self.number2 = ISTextEntryBox:new("0", 0, self:getHeight() / 2 - 5, 18, 18)
 	self.number2:initialise()
 	self.number2:instantiate()
 	self.number2:setEditable(false)
 	self:addChild(self.number2)
 
-	self.button2m = ISButton:new(self:getWidth() / 2 - 8, (self:getHeight() / 2) + 16, 16, 16, getText("v"), self, self.onClick)
-	self.button2m.internal = "B2MINUS"
-	self.button2m:initialise()
-	self.button2m:instantiate()
-	self.button2m.borderColor = {
+	table.insert(self.numberElements[2], self.number2)
+
+	btn = ISButton:new(0, (self:getHeight() / 2) + 16, size, size, "v", self, self.onClick)
+	btn.internal = "B2MINUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button2m)
+	self:addChild(btn)
+
+	table.insert(self.numberElements[2], btn)
 
 	--
-	self.button3p = ISButton:new(self:getWidth() / 2 + 12, (self:getHeight() / 2) - 25, 16, 16, getText("^"), self, self.onClick)
-	self.button3p.internal = "B3PLUS"
-	self.button3p:initialise()
-	self.button3p:instantiate()
-	self.button3p.borderColor = {
+	btn = ISButton:new(0, (self:getHeight() / 2) - 25, size, size, "^", self, self.onClick)
+	btn.internal = "B3PLUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button3p)
+	self:addChild(btn)
 
-	self.number3 = ISTextEntryBox:new("0", self:getWidth() / 2 + 12, self:getHeight() / 2 - 5, 18, 18)
+	table.insert(self.numberElements[3], btn)
+
+	self.number3 = ISTextEntryBox:new("0", 0, self:getHeight() / 2 - 5, size, size)
 	self.number3:initialise()
 	self.number3:instantiate()
 	self.number3:setEditable(false)
 	self:addChild(self.number3)
 
-	self.button3m = ISButton:new(self:getWidth() / 2 + 12, (self:getHeight() / 2) + 16, 16, 16, getText("v"), self, self.onClick)
-	self.button3m.internal = "B3MINUS"
-	self.button3m:initialise()
-	self.button3m:instantiate()
-	self.button3m.borderColor = {
+	table.insert(self.numberElements[3], self.number3)
+
+	btn = ISButton:new(0, (self:getHeight() / 2) + 16, size, size, "v", self, self.onClick)
+	btn.internal = "B3MINUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button3m)
+	self:addChild(btn)
+
+	table.insert(self.numberElements[3], btn)
 
 	--
-	self.button4p = ISButton:new(self.button3p.x + self.button3p.width + 5, (self:getHeight() / 2) - 25, 16, 16, getText("^"), self, self.onClick)
-	self.button4p.internal = "B4PLUS"
-	self.button4p:initialise()
-	self.button4p:instantiate()
-	self.button4p.borderColor = {
+	btn = ISButton:new(0, (self:getHeight() / 2) - 25, size, size, "^", self, self.onClick)
+	btn.internal = "B4PLUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button4p)
+	self:addChild(btn)
 
-	self.number4 = ISTextEntryBox:new("0", self.button4p.x, self:getHeight() / 2 - 5, 18, 18)
+	table.insert(self.numberElements[4], btn)
+
+	self.number4 = ISTextEntryBox:new("0", 0, self:getHeight() / 2 - 5, size, size)
 	self.number4:initialise()
 	self.number4:instantiate()
 	self.number4:setEditable(false)
 	self:addChild(self.number4)
 
-	self.button4m = ISButton:new(self.button4p.x, (self:getHeight() / 2) + 16, 16, 16, getText("v"), self, self.onClick)
-	self.button4m.internal = "B4MINUS"
-	self.button4m:initialise()
-	self.button4m:instantiate()
-	self.button4m.borderColor = {
+	table.insert(self.numberElements[4], self.number4)
+
+	btn = ISButton:new(0, (self:getHeight() / 2) + 16, size, size, "v", self, self.onClick)
+	btn.internal = "B4MINUS"
+	btn:initialise()
+	btn:instantiate()
+	btn.borderColor = {
 		r = 1,
 		g = 1,
 		b = 1,
 		a = 0.1
 	}
-	self:addChild(self.button4m)
+	self:addChild(btn)
 
-	if isAdmin() or getDebug() then
-		y = y - 10
-		local label = ISLabel:new((self:getWidth() / 3) + 65, y, height, "[ADM] Password:" .. tostring(self.target:getModData()["password"]), 1, 1, 1, 1, UIFont.Small)
+	table.insert(self.numberElements[4], btn)
+
+	if self.title == getText('UI_enter_password') and utilities.getPasswordHint(self.player, self.target) then
+		local label = ISLabel:new(0, btn:getY() + btn:getHeight() + 5, FONT_HGT_SMALL, getText('UI_remembered_password') .. ": " .. utilities.getPasswordHint(self.player, self.target), 1, 1, 1, 1, UIFont.Small)
 		label:initialise()
 		self:addChild(label)
+		label:setX(self:getWidth() / 2 - label.width / 2)
 	end
 
+	if isAdmin() or getDebug() then
+		local label = ISLabel:new(0, (self:getHeight() / 2) - 25 - 5 - FONT_HGT_SMALL, FONT_HGT_SMALL, "[ADM] Password:" .. tostring(self.target:getModData()[modDataKey].password), 1, 1, 1, 1, UIFont.Small)
+		label:initialise()
+		self:addChild(label)
+		label:setX(self:getWidth() / 2 - label.width / 2)
+	end
+
+	self:centeringButtons()
+end
+
+function ISEnterPasswordUI:centeringButtons()
+	local padding = 2
+	local center = self:getWidth() / 2
+	local buttonsWidth = self.number1.width * 4 + padding * 3
+	local x = center - buttonsWidth / 2
+	for i, v in ipairs(self.numberElements) do
+		for _, element in ipairs(v) do
+			element:setX(x)
+		end
+		x = x + size + padding
+	end
 end
 
 function ISEnterPasswordUI:destroy()
@@ -185,26 +230,16 @@ end
 function ISEnterPasswordUI:increment(number)
 	local newNumber = tonumber(number:getText()) + 1
 	if newNumber > 9 then newNumber = 0 end
-	number:setText(newNumber .. "")
+	number:setText(tostring(newNumber))
 end
 
 function ISEnterPasswordUI:decrement(number)
 	local newNumber = tonumber(number:getText()) - 1
 	if newNumber < 0 then newNumber = 9 end
-	number:setText(newNumber .. "")
+	number:setText(tostring(newNumber))
 end
 
 function ISEnterPasswordUI:onClick(button)
-	if button.internal == "CANCEL" then
-		self:destroy()
-		return
-	end
-	if button.internal == "OK" then
-		local str = self.number1:getText() .. self.number2:getText() .. self.number3:getText() .. self.number4:getText()
-		self.onclick(self.player, self.target, str)
-		self:destroy()
-		return
-	end
 	if button.internal == "B1PLUS" then self:increment(self.number1) end
 	if button.internal == "B1MINUS" then self:decrement(self.number1) end
 	if button.internal == "B2PLUS" then self:increment(self.number2) end
@@ -213,6 +248,12 @@ function ISEnterPasswordUI:onClick(button)
 	if button.internal == "B3MINUS" then self:decrement(self.number3) end
 	if button.internal == "B4PLUS" then self:increment(self.number4) end
 	if button.internal == "B4MINUS" then self:decrement(self.number4) end
+end
+
+function ISEnterPasswordUI:okAction()
+	local str = self.number1:getText() .. self.number2:getText() .. self.number3:getText() .. self.number4:getText()
+	self.onclick(self.player, self.target, str)
+	self:destroy()
 end
 
 function ISEnterPasswordUI:titleBarHeight()
@@ -226,54 +267,6 @@ function ISEnterPasswordUI:prerender()
 	self:drawTextureScaled(self.titlebarbkg, 2, 1, self:getWidth() - 4, th - 2, 1, 1, 1, 1)
 	self:drawRectBorder(0, 0, self.width, self.height, self.borderColor.a, self.borderColor.r, self.borderColor.g, self.borderColor.b)
 	self:drawTextCentre(self.title, self:getWidth() / 2, 20, 1, 1, 1, 1, UIFont.NewLarge)
-	self:updateButtons()
-end
-
-function ISEnterPasswordUI:updateButtons()
-
-end
-
-function ISEnterPasswordUI:render()
-
-end
-
-function ISEnterPasswordUI:onMouseMove(dx, dy)
-	self.mouseOver = true
-	if self.moving then
-		self:setX(self.x + dx)
-		self:setY(self.y + dy)
-		self:bringToTop()
-	end
-end
-
-function ISEnterPasswordUI:onMouseMoveOutside(dx, dy)
-	self.mouseOver = false
-	if self.moving then
-		self:setX(self.x + dx)
-		self:setY(self.y + dy)
-		self:bringToTop()
-	end
-end
-
-function ISEnterPasswordUI:onMouseDown(x, y)
-	if not self:getIsVisible() then return end
-	self.downX = x
-	self.downY = y
-	self.moving = true
-	self:bringToTop()
-end
-
-function ISEnterPasswordUI:onMouseUp(x, y)
-	if not self:getIsVisible() then return end
-	self.moving = false
-	if ISMouseDrag.tabPanel then ISMouseDrag.tabPanel:onMouseUp(x, y) end
-	ISMouseDrag.dragView = nil
-end
-
-function ISEnterPasswordUI:onMouseUpOutside(x, y)
-	if not self:getIsVisible() then return end
-	self.moving = false
-	ISMouseDrag.dragView = nil
 end
 
 ---@param x integer
@@ -298,7 +291,6 @@ function ISEnterPasswordUI:new(x, y, width, height, player, target, onclick, nam
 		o.x = o:getMouseX() - (width / 2)
 		o:setX(o.x)
 	end
-	o.name = nil
 	o.backgroundColor = {
 		r = 0,
 		g = 0,
@@ -321,9 +313,14 @@ function ISEnterPasswordUI:new(x, y, width, height, player, target, onclick, nam
 	o.onclick = onclick
 	o.player = player
 	o.titlebarbkg = getTexture("media/ui/Panel_TitleBar.png")
-	o.numLines = 1
-	o.maxLines = 1
-	o.multipleLine = false
 	o.title = name or getText('UI_enter_password')
+	o.numberElements = {
+		{},
+		{},
+		{},
+		{},
+	}
 	return o
 end
+
+return ISEnterPasswordUI

@@ -1,9 +1,8 @@
 --TODO: Add anims
 
-require "TimedActions/ISBaseTimedAction"
-require "ISUI/ISLayoutManager"
+local ISEnterPasswordUI = require("ISUI/ISEnterPasswordUI")
 
-InteractionWithSafeAction = ISBaseTimedAction:derive("InteractionWithSafeAction")
+local InteractionWithSafeAction = ISBaseTimedAction:derive("InteractionWithSafeAction")
 
 function InteractionWithSafeAction:isValid()
 	return true
@@ -18,19 +17,11 @@ function InteractionWithSafeAction:waitToStart()
 end
 
 function InteractionWithSafeAction:perform()
-	if self.type == 'enterPassword' then
-		local ui = ISEnterPasswordUI:new(0, 0, 300, 200, self.character, self.target, self.fn)
+	if self.type == 'enterPassword' or self.type == 'setUpPasswordUI' then
+		local ui = ISEnterPasswordUI:new(0, 0, 300, 200, self.character, self.target, self.fn, self.type == 'setUpPasswordUI' and getText('UI_Setup_password') or nil)
 		ui:initialise()
 		ui:addToUIManager()
-	elseif self.type == 'close' then
-		self.fn(self.target)
-	elseif self.type == 'open' then
-		self.fn(self.pass, self.target)
-	elseif self.type == 'setUpPasswordUI' then
-		local ui = ISEnterPasswordUI:new(0, 0, 300, 200, self.character, self.target, self.fn, getText('UI_Setup_password'))
-		ui:initialise()
-		ui:addToUIManager()
-	elseif self.type == 'setUpPassword' then
+	else
 		self.fn(self.character, self.target, self.pass)
 	end
 	-- needed to remove from queue / start next.
@@ -57,3 +48,5 @@ function InteractionWithSafeAction:new(character, target, fn, type, pass)
 	o.pass = pass
 	return o
 end
+
+return InteractionWithSafeAction
