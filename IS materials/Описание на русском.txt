@@ -24,7 +24,7 @@
 [h3] Планы на будущее: [/h3]
 - Добавить сейфы, которые открываются с ключа.
 - Появление на ванильной карте в логичных местах.
-- Интеграция с модом [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
+- Интеграция с [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
 
 [b]Огромное спасибо [url=https://steamcommunity.com/id/birget/]Birget[/url] за тайлы.[/b]
 

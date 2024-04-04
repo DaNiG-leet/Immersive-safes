@@ -1,5 +1,5 @@
 version=1
-id=
+id=3212103710
 title=Immersive Safes
 description=Do you want to hide your secrets and your closet is not the right place for it? Do you have cops busting in to seize your millions, and your nightstand is too easy to open? Yes, these are significant problems, but there is a way out! Meet safes!
 description=
@@ -27,7 +27,7 @@ description=
 description=[h3] Future plans: [/h3]
 description=- Add safes that open with a key.
 description=- Appear on the vanilla map in logical places.
-description=- Integration with mod [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
+description=- Integration with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
 description=
 description=[b]Huge thanks to [url=https://steamcommunity.com/id/birget/]Birget[/url] for the tiles.[/b]
 description=
