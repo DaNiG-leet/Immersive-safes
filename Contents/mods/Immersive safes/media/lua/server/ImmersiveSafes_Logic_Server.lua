@@ -9,7 +9,7 @@ local ImmersiveSafes = {
 ImmersiveSafes.Module = 'SafesModule'
 
 ImmersiveSafes.writeLog = function(IsoPlayer, target, message)
-    local str = target:getX() .. ' ' .. target:getY() .. ' ' .. target:getZ() .. ' ' .. target:getSprite():getName() .. ' ' .. IsoPlayer:getUsername() .. ' ' .. message
+    local str = target and (target:getX() .. ' ' .. target:getY() .. ' ' .. target:getZ() .. ' ' .. target:getSprite():getName() .. ' ' .. IsoPlayer:getUsername() .. ' ' .. message) or IsoPlayer:getUsername() .. ' ' .. message
     writeLog(ImmersiveSafes.logFileName, str)
 end
 
@@ -63,9 +63,9 @@ ImmersiveSafes.commands.editSafeModData = function(target, playerObj, args)
     local data = args.data
     if data.key == 'password' then
         ImmersiveSafes.writeLog(playerObj, target, 'set new pass. Old: ' .. tostring(target:getModData()[ImmersiveSafes.modDataKey][data.key]) .. ' new: ' .. data.value)
-        target:getModData()[ImmersiveSafes.modDataKey][data.key] = data.value
-        ImmersiveSafes.syncSpecificModData(target, data.key, data.value)
     end
+    target:getModData()[ImmersiveSafes.modDataKey][data.key] = data.value
+    ImmersiveSafes.syncSpecificModData(target, data.key, data.value)
 end
 
 ImmersiveSafes.commands.syncAllModData = function(target, playerObj, args)
@@ -84,7 +84,7 @@ ImmersiveSafes.OnClientCommand = function(module, command, playerObj, args)
 			end
             ImmersiveSafes.commands[command](target, playerObj, args)
         else
-            print 'error'
+            ImmersiveSafes.writeLog(playerObj, target, 'Error. Target ' .. args.target .. ' has not been found. X: ' .. args.x .. ' Y: ' .. args.y .. ' Z: ' .. args.z)
         end
     end
 end
