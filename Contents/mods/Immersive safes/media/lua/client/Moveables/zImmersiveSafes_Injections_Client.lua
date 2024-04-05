@@ -61,6 +61,7 @@ function IsoObject.new(_cell, _square, itemSprite)
     if not type(itemSprite) == 'string' or (type(itemSprite) == 'string' and not luautils.stringStarts(itemSprite, "safes_01")) then return old_IsoObject_new(_cell, _square, itemSprite) end
     local obj = old_IsoObject_new(_cell, _square, itemSprite)
     obj:getModData()[modDataKay] = modDataBuffer
+    modDataBuffer = {}
     return obj
 end
 
@@ -71,7 +72,7 @@ ISInventoryPaneContextMenu.getContainers = function(...)
         local itemContainer = containers:get(i)
         if itemContainer then
             local parent = itemContainer:getParent()
-            if not parent or not instanceof(parent, "IsoObject") or utilities.isSafeOpened(parent) then array:add(itemContainer) end
+            if not parent or not instanceof(parent, "IsoObject") or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then array:add(itemContainer) end
         end
     end
     return array
@@ -83,7 +84,7 @@ function ISCraftingUI:getContainers()
     for i = 0, self.containerList:size() - 1 do
         local itemContainer = self.containerList:get(i)
         local parent = itemContainer:getParent()
-        if not parent or not instanceof(parent, "IsoObject") or utilities.isSafeOpened(parent) then
+        if not parent or not instanceof(parent, "IsoObject") or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then
             array:add(itemContainer)
         end
     end

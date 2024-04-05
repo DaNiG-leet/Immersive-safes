@@ -85,8 +85,19 @@ a.SafesTileList = {
 	},
 }
 
+a.getElementsCount = function(t)
+	local c = 0
+	for k, v in pairs(t) do
+		c = c + 1
+	end
+	return c
+end
+
 a.isSafeOpened = function(safe)
 	local spriteName = safe:getTextureName()
+	if not spriteName then
+		return nil
+	end
     for _, val in pairs(a.SafesTileList) do
         if val['open'] == spriteName then return true end
         if val['close'] == spriteName then return false end
@@ -122,7 +133,7 @@ a.sendData = function(IsoPlayer, command, target, data)
 end
 
 a.setModData = function(player, safe)
-	if not safe:getModData()[defaultModData.modDataKey] then
+	if not safe:getModData()[defaultModData.modDataKey] or a.getElementsCount(safe:getModData()[defaultModData.modDataKey]) == 0 then
 		safe:getModData()[defaultModData.modDataKey] = copyTable(defaultModData.modData)
 		safe:getModData()[defaultModData.modDataKey].SAFEID = ZombRand(4000, 10000)
 		a.syncAllModData(player, safe)
