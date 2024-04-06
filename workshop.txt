@@ -1,42 +1,42 @@
 version=1
 id=3212103710
 title=Immersive Safes
-description=Do you want to hide your secrets and your closet is not the right place for it? Do you have cops busting in to seize your millions, and your nightstand is too easy to open? Yes, these are significant problems, but there is a way out! Meet safes!
-description=
-description=A simple mod that adds six types of safes. Two kinds of floor, two wall and two built into the floor.
-description=
-description=[h3] Functionality: [/h3]
-description=- Safes can only be opened with a password.
-description=- If you open a safe, the character memorizes the code for it.
-description=- It is impossible to destroy the safe, the floor the safe is built into, and the wall the safe is built into.
-description=- A safe built into the floor can be hidden under the carpet.
-description=
-description=[h3] For server owners: [/h3]
-description=- Partial Logging. The safe records who and when interacted with it.
-description=- Ability to force open the safe.
-description=
-description=Safes can be placed via the Brush tool from the "safes_01" tileset.
-description=
-description=[h3] Created ONLY FOR MULTIPLAYER! [/h3]
-description=Didn't test the functionality in single player. And besides, why?
-description=
-description=[h3] compatibility [/h3]
-description=Should be with all mods. If it is not, please report.
-description=
-description=[h3] NON-INCLUSION [/h3]
-description=Not sure if there is such a thing.
-description=
-description=[h3] Future plans: [/h3]
-description=- Add safes that open with a key.
-description=- Appear on the vanilla map in logical places.
-description=- Integration with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
-description=
-description=[b]Huge thanks to [url=https://steamcommunity.com/id/birget/]Birget[/url] for the tiles.[/b]
-description=
-description=[url=https://discord.gg/Z3T7Ks9rAD][img]https://i.imgur.com/UN9WU8Q.png[/img][/url]
-description=
-description=[img]https://i.imgur.com/4HonJNk.png[/img]
-description=
+description=Do you want to hide your secrets and your closet is not the right place for it? Do you have cops busting in to seize your millions, and your nightstand is too easy to open? Yes, these are significant problems, but there is a way out! Meet safes!
+description=
+description=A simple mod that adds six types of safes. Two kinds of floor, two wall and two built into the floor.
+description=
+description=[h3] Functionality: [/h3]
+description=- Safes can only be opened with a password.
+description=- If you open a safe, the character memorizes the code for it.
+description=- It is impossible to destroy the safe, the floor the safe is built into, and the wall the safe is built into.
+description=- A safe built into the floor can be hidden under the carpet.
+description=
+description=[h3] For server owners: [/h3]
+description=- Partial Logging. The safe records who and when interacted with it.
+description=- Ability to force open the safe.
+description=
+description=Safes can be placed via the Brush tool from the "safes_01" tileset.
+description=
+description=[h3] Created ONLY FOR MULTIPLAYER! [/h3]
+description=Didn't test the functionality in single player. And besides, why?
+description=
+description=[h3] compatibility [/h3]
+description=Should be with all mods. If it is not, please report.
+description=
+description=[h3] NON-INCLUSION [/h3]
+description=Not sure if there is such a thing.
+description=
+description=[h3] Future plans: [/h3]
+description=- Add safes that open with a key.
+description=- Appear on the vanilla map in logical places.
+description=- Integration with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2929123989]zRe Better Lockpicking ReMod by kERHUS[/url]
+description=
+description=[b]Huge thanks to [url=https://steamcommunity.com/id/birget/]Birget[/url] for the tiles.[/b]
+description=
+description=[url=https://discord.gg/Z3T7Ks9rAD][img]https://i.imgur.com/UN9WU8Q.png[/img][/url]
+description=
+description=[img]https://i.imgur.com/4HonJNk.png[/img]
+description=
 description=[url=http://theindiestone.com/forums/index.php/topic/2530-mod-permissions/?p=36478][img]https://steamuserimages-a.akamaihd.net/ugc/1822269007325041509/9A7DF10F3A778CF98E9CE7423417E8B6EA687334/?imw=5000&imh=5000[/img][/url]
 tags=Build 41;Misc;Multiplayer;Realistic
 visibility=public

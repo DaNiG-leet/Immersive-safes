@@ -72,7 +72,7 @@ ISInventoryPaneContextMenu.getContainers = function(...)
         local itemContainer = containers:get(i)
         if itemContainer then
             local parent = itemContainer:getParent()
-            if not parent or not instanceof(parent, "IsoObject") or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then array:add(itemContainer) end
+            if not parent or not instanceof(parent, "IsoObject") or not parent:getTextureName() or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then array:add(itemContainer) end
         end
     end
     return array
@@ -84,7 +84,7 @@ function ISCraftingUI:getContainers()
     for i = 0, self.containerList:size() - 1 do
         local itemContainer = self.containerList:get(i)
         local parent = itemContainer:getParent()
-        if not parent or not instanceof(parent, "IsoObject") or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then
+        if not parent or not instanceof(parent, "IsoObject") or not parent:getTextureName() or not luautils.stringStarts(parent:getTextureName(), "safes_01") or utilities.isSafeOpened(parent) == true then
             array:add(itemContainer)
         end
     end
